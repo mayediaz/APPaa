@@ -53,5 +53,5 @@ def dbauth(apikey, postdata):
 
 
 #Global variables
-tokenbot = "BOT TOKEN"
-idroomtest = "ROOM ID"
+tokenbot = "NDU2NmZlMmQtNTM2Mi00ZDkyLWIyNjItNzE5YmJiNjc4MGI3YjZlODRmNjAtMzQy"
+idroomtest = "Y2lzY29zcGFyazovL3VzL1JPT00vODFhZTFkODAtY2JhYS0xMWU3LThlYTgtYmY3ZTBhNTQwOWIx"
