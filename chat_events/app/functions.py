@@ -11,7 +11,7 @@ def cshealth():
 
 def dbcompare(client):
     try:
-        c = MongoClient("MONGO STRING")
+        c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
         document = [x for x in c.aalarms.apikeys.find({"cliente":client})]
         if document != []:
             key = uuid.uuid4().hex
@@ -25,7 +25,7 @@ def dbcompare(client):
 def dbwrite(client):
     try:
         token = uuid.uuid4().hex
-        c = MongoClient("MONGO STRING")
+        c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
         c.aalarms.apikeys.insert_one({"cliente":client,"key":token})
         return "OK", token
     except:
@@ -33,7 +33,7 @@ def dbwrite(client):
 
 def dbauth(apikey, postdata):
     try:
-        c = MongoClient("MONGO STRING")
+        c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
         document = [x for x in c.aalarms.apikeys.find({"cliente": postdata["client"]})]
         if document != []:
             if document[0]["key"] == apikey:
