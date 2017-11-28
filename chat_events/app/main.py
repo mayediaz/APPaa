@@ -47,8 +47,11 @@ def cstest():
 def csrooms():
     token = request.args.get("token")
     header = setHeaders(token)
-    return jsonify(getRooms(header))
-
+    resp = getRooms(header)
+    if str(resp) == "<Response [200]>":
+        return jsonify(resp.json())
+    else:
+        return jsonify({"error": "Bad auth/CS error"})
 
 if __name__ == "__main__":
     # Only for debugging while developing

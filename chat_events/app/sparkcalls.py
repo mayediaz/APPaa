@@ -17,7 +17,7 @@ def SparkPOST(theHeader, uri, payload):
 def getRooms(theHeader):
     uri = 'https://api.ciscospark.com/v1/rooms'
     resp = requests.get(uri, headers=theHeader)
-    return resp.json()
+    return resp
 # Search for an specific room name
 def findRoom(roomList, name):
     roomId = 0
