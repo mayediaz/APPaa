@@ -1,24 +1,24 @@
 import requests
 import json
-#Set Cisco Spark headers
+#Esta funcion crea el encabezado para la autenticacion de Spark
 def setHeaders(token):
     accessToken_hdr = 'Bearer ' + token
     spark_header = {'Authorization': accessToken_hdr, 'Content-Type': 'application/json; charset=utf-8'}
     return spark_header
-# Get an specific message from Cisco Spark
+# Esta funcion obtiene los mensajes que le escriben al Bot
 def SparkGET(uri, theHeader):
     resp = requests.get(uri, headers=theHeader)
     return resp.json()
-# Post messages to Cisco Spark
+# Esta funcion envia mensajes a Spark
 def SparkPOST(theHeader, uri, payload):
     resp = requests.post(uri, data=json.dumps(payload), headers=theHeader)
     return resp
-# Get list of rooms from an specific account
+# Esta funcion consulta y devuelve el lista de rooms del usuario
 def getRooms(theHeader):
     uri = 'https://api.ciscospark.com/v1/rooms'
     resp = requests.get(uri, headers=theHeader)
-    return resp
-# Search for an specific room name
+    return resp.json()
+# Esta funcion busca un room especifico y devuelve su id
 def findRoom(roomList, name):
     roomId = 0
     for room in roomList["items"]:
