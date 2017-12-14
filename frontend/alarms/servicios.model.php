@@ -539,7 +539,7 @@ class servicios_model
             CURLOPT_HTTPHEADER => array('Authorization:'.$this->rooms[$this->cliente]['APIKEY'],'Content-Type:application/json')//APIKEY
         ));
         $result = curl_exec($ch);
-        file_put_contents("debug.log",$result.PHP_EOL,FILE_APPEND);
+        
         if(strpos($result, "Call in progress") > 0)
         {
             $res = true;
