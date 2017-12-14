@@ -13,7 +13,7 @@ def cshealth():
 def dbcompare(client, service, callid):
     if service == "token":
         try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017#@172.16.4.121/aalarms")
+            c = MongoClient("MONGO STRING")
             document = [x for x in c.aalarms.apikeys.find({"cliente":client})]
             if document != []:
                 key = uuid.uuid4().hex
@@ -25,7 +25,7 @@ def dbcompare(client, service, callid):
             return "Failed to add/update"
     elif service == "call":
         try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017#@172.16.4.121/aalarms")
+            c = MongoClient("MONGO STRING")
             document = [x for x in c.aalarms.callsnexmo.find({"uuid": callid})]
             if document != []:
                 return  {"number":document[len(document)-1]["anumber"], "client":document[len(document)-1]["client"]}
@@ -39,14 +39,14 @@ def dbwrite(client, data, service):
     if service == "token":
         try:
             token = uuid.uuid4().hex
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017#@172.16.4.121/aalarms")
+            c = MongoClient("MONGO STRING")
             c.aalarms.apikeys.insert_one({"cliente":client,"key":token})
             return "OK", token
         except:
             return "Failed to add/update", 0
     elif service == "call":
         try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017#@172.16.4.121/aalarms")
+            c = MongoClient("MONGO STRING")
             c.aalarms.callsnexmo.insert_one({"client": client, "uuid": data["uuid"], "status":data["status"], "anumber":data["anumber"]})
             return 1
         except:
@@ -54,7 +54,7 @@ def dbwrite(client, data, service):
 
 def dbauth(apikey, postdata):
     try:
-        c = MongoClient("mongodb://aalarms:Inf0m3d142017#@172.16.4.121/aalarms")
+        c = MongoClient("MONGO STRING")
         document = [x for x in c.aalarms.apikeys.find({"cliente": postdata["client"]})]
 
         if document != []:
@@ -70,19 +70,19 @@ def dbauth(apikey, postdata):
 def nexmocall(postdata):
     try:
         PRIVATE_KEY = open("private.key", 'r').read()
-        client = nexmo.Client(application_id="f0a90063-6f55-4524-991a-0f3b7f51ed94", key=nexmo_key,
+        client = nexmo.Client(application_id="APP ID", key=nexmo_key,
                                           secret=nexmo_secret, private_key=PRIVATE_KEY)
         response = client.create_call({
                     "to": [{"type": "phone", "number": "{0}".format(postdata["number"])}],
                     "from": {"type": "phone", 'number': "123456789"},
-                    "answer_url": ["http://msg-bot-abacox.infomediaservice.com:5003/ncco?client={0}".format(postdata["client"])]
+                    "answer_url": ["http://NCCO-STORE".format(postdata["client"])]
                     })
         return response
     except:
         return 3
 
 #Global variables
-tokenbot = "NDU2NmZlMmQtNTM2Mi00ZDkyLWIyNjItNzE5YmJiNjc4MGI3YjZlODRmNjAtMzQy"
-idroomtest = "Y2lzY29zcGFyazovL3VzL1JPT00vODFhZTFkODAtY2JhYS0xMWU3LThlYTgtYmY3ZTBhNTQwOWIx"
-nexmo_key = "167b6129"
-nexmo_secret = "31c0aee89130a6d1"
+tokenbot = "BOT TOKEN"
+idroomtest = "TEST ROOM ID"
+nexmo_key = "NEXMO KEY"
+nexmo_secret = "NEXMO SECRET"
