@@ -463,7 +463,7 @@ function cargarUsuario()
             error:function(objeto, quepaso, otroobj){alert('Error');},
             success: function(data){
                 if(data.val=='FALSE'){
-                    alert('Error al traer información del Usuario');
+                    alert('Error al traer informaciÃ³n del Usuario');
                     return false;
                 }
 
@@ -504,5 +504,5 @@ function actualizarUsuario()
 }
 function integrarSpark()
 {
-    window.location = 'https://api.ciscospark.com/v1/authorize?client_id=C14b8fdc411b38ea02bd0c19bd760f5517456953f2f8275bbb8afcec97e48cbda&response_type=code&redirect_uri=http%3A%2F%2Faalarms.infomediaservice.com%2Falarms%2Finicio.php&scope=spark%3Amessages_write%20spark%3Arooms_read%20spark%3Akms&state=set_state_here';
+    window.location = 'https://api.ciscospark.com/v1/authorize?client_id=CLIENT_ID&response_type=code&redirect_uri=http%3A%2F%2Faalarms.infomediaservice.com%2Falarms%2Finicio.php&scope=spark%3Amessages_write%20spark%3Arooms_read%20spark%3Akms&state=set_state_here';
 }
