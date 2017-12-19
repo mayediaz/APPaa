@@ -13,7 +13,7 @@ def cshealth():
 def dbcompare(client, service, callid):
     if service == "token":
         try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
+            c = MongoClient("")
             document = [x for x in c.aalarms.apikeys.find({"cliente":client})]
             if document != []:
                 key = uuid.uuid4().hex
@@ -25,7 +25,7 @@ def dbcompare(client, service, callid):
             return "Failed to add/update"
     elif service == "call":
         try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
+            c = MongoClient("")
             document = [x for x in c.aalarms.callsnexmo.find({"uuid": callid})]
             if document != []:
                 return  {"number":document[0]["anumber"], "client":document[0]["client"]}
@@ -39,14 +39,14 @@ def dbwrite(client, data, service):
     if service == "token":
         try:
             token = uuid.uuid4().hex
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
+            c = MongoClient("")
             c.aalarms.apikeys.insert_one({"cliente":client,"key":token})
             return "OK", token
         except:
             return "Failed to add/update", 0
     elif service == "call":
         try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
+            c = MongoClient("")
             c.aalarms.callsnexmo.insert_one({"client": client, "uuid": data["uuid"], "status":data["status"], "anumber":data["anumber"]})
             return 1
         except:
@@ -54,7 +54,7 @@ def dbwrite(client, data, service):
 
 def dbauth(apikey, postdata):
     try:
-        c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
+        c = MongoClient("")
         document = [x for x in c.aalarms.apikeys.find({"cliente": postdata["client"]})]
 
         if document != []:
@@ -82,7 +82,7 @@ def nexmocall(postdata):
         return 3
 
 #Global variables
-tokenbot = "NDU2NmZlMmQtNTM2Mi00ZDkyLWIyNjItNzE5YmJiNjc4MGI3YjZlODRmNjAtMzQy"
-idroomtest = "Y2lzY29zcGFyazovL3VzL1JPT00vODFhZTFkODAtY2JhYS0xMWU3LThlYTgtYmY3ZTBhNTQwOWIx"
-nexmo_key = "167b6129"
-nexmo_secret = "31c0aee89130a6d1"
+tokenbot = ""
+idroomtest = ""
+nexmo_key = ""
+nexmo_secret = ""
