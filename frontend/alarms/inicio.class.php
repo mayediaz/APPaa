@@ -96,7 +96,7 @@
                     type: 'POST',
                     cache: false,
                     dataType: 'json',
-                    data: ({grant_type:"authorization_code",client_id:'C14b8fdc411b38ea02bd0c19bd760f5517456953f2f8275bbb8afcec97e48cbda',client_secret:'9b4e59ad50f74a6bb88d83c42ff61e8e8d340212b6bf9ad184152b552ad14e72',code:code,redirect_uri:'http://alarms.infomediaservice.com/alarms/inicio.php'}),
+                    data: ({grant_type:"authorization_code",client_id:'client_id',code:code,redirect_uri:'redirect_uri'}),
                     error:function(objeto, quepaso, otroobj){alert('Error');},
                     success: function(info){
                         abrirPagina('miperfil.html.php?access_token='+info.access_token+'&refresh_token='+info.refresh_token,8,"Mi Perfil")
