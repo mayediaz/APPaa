@@ -63,5 +63,5 @@ def nexmocall(postdata):
 
 #Global variables
 
-nexmo_key = "167b6129"
-nexmo_secret = "31c0aee89130a6d1"
+nexmo_key = ""
+nexmo_secret = ""
