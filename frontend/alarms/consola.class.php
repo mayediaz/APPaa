@@ -3,7 +3,7 @@
     {
         public function display()
         {
-            global $param,$servicios;
+            global $param,$servicios,$noLaboral;
             $this->encabezados();
             ?>
                         .navbar-brand{
@@ -136,7 +136,7 @@
                                 type: 'POST',
                                 cache: false,
                                 dataType: 'json',
-                                data: ({actionID: 'test".$nom."',servicio: ".$key." }),
+                                data: ({actionID: 'test".$nom."',servicio: ".$key.",web:1 }),
                                 error:function(objeto, quepaso, otroobj){clearInterval(test".$nom.");alert('Error');},
                                 success: function(data){
                                     clearInterval(test".$nom.");

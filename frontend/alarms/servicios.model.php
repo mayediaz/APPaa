@@ -129,7 +129,7 @@ class servicios_model
                 $this->servicios[$fila["SERVICIO_ID"]][$fila["SERVICIO_NOMBRE"]]['define'][$fila1["DEFINE_ID"]]['param'] = $fila1["DEFINE_PARAM"];
                 $this->servicios[$fila["SERVICIO_ID"]][$fila["SERVICIO_NOMBRE"]]['define'][$fila1["DEFINE_ID"]]['desc'] = utf8_encode($fila1["DEFINE_DESCRIPCION"]);
 
-                $sql_val = "SELECT VAL_DEFINE_ID,CLIENTE_ID, CLIENTE_NOMBRE, VAL_DEFINE_VALOR,VAL_DEFINE_REPORTE,VAL_DEFINE_TEST_ANT,VAL_DEFINE_TEST_ACT
+                $sql_val = "SELECT VAL_DEFINE_ID,CLIENTE_ID, CLIENTE_NOMBRE, VAL_DEFINE_VALOR,VAL_DEFINE_REPORTE,VAL_DEFINE_TEST_ANT,VAL_DEFINE_TEST_ACT,VAL_DEFINE_ALERTAR
                 FROM cliente INNER JOIN val_define ON (CLIENTE_ID = VAL_DEFINE_CLIENTE)
                 WHERE VAL_DEFINE_PARAM = ".$fila1["DEFINE_ID"];
                 $res2 = mysql_query($sql_val,$conn);
@@ -140,6 +140,7 @@ class servicios_model
                     $this->params[$fila["SERVICIO_ID"]][$fila2["CLIENTE_NOMBRE"]][$fila1["DEFINE_PARAM"]]['valor'] = $fila2["VAL_DEFINE_VALOR"];
                     $this->params[$fila["SERVICIO_ID"]][$fila2["CLIENTE_NOMBRE"]][$fila1["DEFINE_PARAM"]]['test_ant'] = $fila2["VAL_DEFINE_TEST_ANT"];
                     $this->params[$fila["SERVICIO_ID"]][$fila2["CLIENTE_NOMBRE"]][$fila1["DEFINE_PARAM"]]['test_act'] = $fila2["VAL_DEFINE_TEST_ACT"];
+                    $this->params[$fila["SERVICIO_ID"]][$fila2["CLIENTE_NOMBRE"]][$fila1["DEFINE_PARAM"]]['alertar'] = $fila2["VAL_DEFINE_ALERTAR"];
                     $this->params[$fila["SERVICIO_ID"]][$fila2["CLIENTE_NOMBRE"]]['reporte'] = $fila2["VAL_DEFINE_REPORTE"];
                 }
             }
@@ -175,10 +176,11 @@ class servicios_model
 
     function testZabbix()
     {
-        global $servicio;
+        global $servicio,$noLaboral;
         $params = $this->obtenerParametros();
         $a_vect['val'] = 'TRUE';
         $a_vect['alertas'] = "";
+        $alertar = "";
         $sep = "";
         foreach($params as $cliente => $info)
         {
@@ -189,17 +191,41 @@ class servicios_model
                 if($dif > 5)
                 {
                     $a_vect['alertas'] .= $sep.$cliente;
+                    if($noLaboral)
+                    {
+                        $cuenta = $info['zabbix']['alertar']+1;
+                        $alertar .= $sep.$cuenta;
+                        $this->udp_alerta($info['zabbix']['id'],$cuenta);
+                    }
                     $sep = '<br>';
+                }
+                elseif($noLaboral)
+                {
+                    $this->udp_alerta($info['zabbix']['id'],0);
                 }
             }
             else
             {
                 $a_vect['alertas'] .= $sep.$cliente;
+                if($noLaboral)
+                {
+                    $cuenta = $info['zabbix']['alertar']+1;
+                    $alertar .= $sep.$cuenta;
+                    $this->udp_alerta($info['zabbix']['id'],$cuenta);
+                }
                 $sep = '<br>';
             }
+
         }
 
         $a_vect['info'] = (strlen($a_vect['alertas']) > 0)?1:0;
+
+        if($noLaboral)
+        {
+            $max = max(explode("<br>",$alertar));
+            $a_vect['llamarOk'] = ($max == 3)?true:false;
+            return $a_vect;
+        }
 
         echo json_encode($a_vect);
     }
@@ -231,16 +257,16 @@ class servicios_model
 
     function testCorreo()
     {
-        global $servicio;
+        global $servicio,$noLaboral;
         $params = $this->obtenerParametros();
         $a_vect['val'] = 'TRUE';
         $a_vect['alertas'] = "";
         $sep = "";
+        $alertar = "";
         require_once('librerias/phpmailer/class.phpmailer.php');
 
         foreach($params as $cliente => $info)
         {
-
             $mail             = new PHPMailer();
             $mail->IsSMTP(); // telling the class to use SMTP
             $mail->SMTPDebug  = 0;                     // enables SMTP debug information (for testing)
@@ -274,12 +300,33 @@ class servicios_model
                 if(!$mail->Send())
                 {
                     $a_vect['alertas'] .= $sep.$cliente;
+                    if($noLaboral)
+                    {
+                        $cuenta = $info['correo_prin']['alertar']+1;
+                        $alertar .= $sep.$cuenta;
+                        $this->udp_alerta($info['correo_prin']['id'],$cuenta);
+                    }
                     $sep = '<br>';
                 }
+                elseif($noLaboral)
+                {
+                    $this->udp_alerta($info['correo_prin']['id'],0);
+                }
+            }
+            elseif($noLaboral)
+            {
+                $this->udp_alerta($info['correo_prin']['id'],0);
             }
         }
 
         $a_vect['info'] = (strlen($a_vect['alertas']) > 0)?1:0;
+
+        if($noLaboral)
+        {
+            $max = max(explode("<br>",$alertar));
+            $a_vect['llamarOk'] = ($max == 3)?true:false;
+            return $a_vect;
+        }
 
         echo json_encode($a_vect);
     }
@@ -310,11 +357,12 @@ class servicios_model
 
     function testCcx()
     {
-        global $servicio;
+        global $servicio,$noLaboral;
         $params = $this->obtenerParametros();
         $a_vect['val'] = 'TRUE';
         $a_vect['alertas'] = "";
         $sep = "";
+        $alertar = "";
         foreach($params as $cliente => $info)
         {
 
@@ -329,11 +377,28 @@ class servicios_model
             if (!strpos($page, "OK"))
             {
                 $a_vect['alertas'] .= $sep.$cliente;
+                if($noLaboral)
+                {
+                    $cuenta = $info['url_ccx']['alertar']+1;
+                    $alertar .= $sep.$cuenta;
+                    $this->udp_alerta($info['url_ccx']['id'],$cuenta);
+                }
                 $sep = '<br>';
+            }
+            else
+            {
+                $this->udp_alerta($info['url_ccx']['id'],0);
             }
         }
 
         $a_vect['info'] = (strlen($a_vect['alertas']) > 0)?1:0;
+
+        if($noLaboral)
+        {
+            $max = max(explode("<br>",$alertar));
+            $a_vect['llamarOk'] = ($max == 3)?true:false;
+            return $a_vect;
+        }
 
         echo json_encode($a_vect);
     }
@@ -359,11 +424,12 @@ class servicios_model
 
     function testnexmo()
     {
-        global $servicio;
+        global $servicio,$noLaboral;
         $params = $this->obtenerParametros();
         $a_vect['val'] = 'TRUE';
         $a_vect['alertas'] = "";
         $sep = "";
+        $alertar = "";
         foreach($params as $cliente => $info)
         {
 
@@ -378,11 +444,28 @@ class servicios_model
             if (!strpos($page, "OK"))
             {
                 $a_vect['alertas'] .= $sep.$cliente;
+                if($noLaboral)
+                {
+                    $cuenta = $info['url_nexmo']['alertar']+1;
+                    $alertar .= $sep.$cuenta;
+                    $this->udp_alerta($info['url_nexmo']['id'],$cuenta);
+                }
                 $sep = '<br>';
+            }
+            elseif($noLaboral)
+            {
+                $this->udp_alerta($info['url_nexmo']['id'],0);
             }
         }
 
         $a_vect['info'] = (strlen($a_vect['alertas']) > 0)?1:0;
+
+        if($noLaboral)
+        {
+            $max = max(explode("<br>",$alertar));
+            $a_vect['llamarOk'] = ($max == 3)?true:false;
+            return $a_vect;
+        }
 
         echo json_encode($a_vect);
     }
@@ -427,11 +510,12 @@ class servicios_model
 
     function testSpark()
     {
-        global $servicio;
+        global $servicio,$noLaboral;
         $params = $this->obtenerParametros();
         $a_vect['val'] = 'TRUE';
         $a_vect['alertas'] = "";
         $sep = "";
+        $alertar = "";
         foreach($params as $cliente => $info)
         {
 
@@ -446,8 +530,25 @@ class servicios_model
             if (!strpos($page, "OK"))
             {
                 $a_vect['alertas'] .= $sep.$cliente;
+                if($noLaboral)
+                {
+                    $cuenta = $info['url_spark']['alertar']+1;
+                    $alertar .= $sep.$cuenta;
+                    $this->udp_alerta($info['url_spark']['id'],$cuenta);
+                }
                 $sep = '<br>';
             }
+            elseif($noLaboral)
+            {
+                $this->udp_alerta($info['url_spark']['id'],0);
+            }
+        }
+
+        if($noLaboral)
+        {
+            $max = max(explode("<br>",$alertar));
+            $a_vect['llamarOk'] = ($max == 3)?true:false;
+            return $a_vect;
         }
 
         $a_vect['info'] = (strlen($a_vect['alertas']) > 0)?1:0;
@@ -526,7 +627,7 @@ class servicios_model
         $paramsnexmo = $this->params[$this->nexmo][$this->cliente];
         $url = $paramsnexmo['url_nexmo']['valor']."altcall";
         $lista = str_replace(",","\n",$lista);
-        $message = ($nombre != '')?"Se esta presentando caidas en el servicio $nom en las siguientes instancias:\n$lista":"Zabbix reporta fallas en el cliente ".$cliente[0]." con el asunto: ".$asunto;
+        $message = ($nom != '')?"Se esta presentando caidas en el servicio $nom en las siguientes instancias:\n$lista":"Zabbix reporta fallas en el cliente ".$cliente[0]." con el asunto: ".$asunto;
         $data = array("pnumber" => str_replace("*03","57",$destinoCel),"anumber" => str_replace("*03","57",$jefeCel),"message"=>$message,"client" => $this->cliente);
         $data_string = json_encode($data);
         $ch=curl_init($url);
@@ -539,7 +640,7 @@ class servicios_model
             CURLOPT_HTTPHEADER => array('Authorization:'.$this->rooms[$this->cliente]['APIKEY'],'Content-Type:application/json')//APIKEY
         ));
         $result = curl_exec($ch);
-        
+
         if(strpos($result, "Call in progress") > 0)
         {
             $res = true;
@@ -884,7 +985,6 @@ class servicios_model
                 $a_vect['val'] = 'FALSE';
                 echo json_encode($a_vect);
             }
-            mysql_free_result($res);
         }
         $a_vect['val'] = 'TRUE';
         echo json_encode($a_vect);
@@ -1086,6 +1186,14 @@ class servicios_model
         }
         mysql_free_result($res);
         return $html;
+    }
+
+    function udp_alerta($id,$cuenta)
+    {
+        include('main.php');
+        $sql = "UPDATE val_define SET VAL_DEFINE_ALERTAR = '".$cuenta."' WHERE VAL_DEFINE_ID = ".$id;
+        $res = mysql_query($sql,$conn);
+        if($res === false){echo 'Error SQL {'.$sql.'}&nbsp;&nbsp;&nbsp;'.mysql_error($conn);exit;}
     }
 }
 ?>

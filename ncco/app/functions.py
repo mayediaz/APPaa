@@ -1,14 +1,9 @@
 import uuid
 import nexmo
 from pymongo import MongoClient
-from sparkcalls import setHeaders,  SparkPOST
 
-def cshealth():
-    try:
-        header = setHeaders(tokenbot)
-        return SparkPOST(header, "https://api.ciscospark.com/v1/messages", {"roomId": idroomtest, "text": ""})
-    except:
-        return "Error"
+
+
 
 def dbcompare(client, service, callid):
     if service == "token":
@@ -28,29 +23,14 @@ def dbcompare(client, service, callid):
             c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
             document = [x for x in c.aalarms.callsnexmo.find({"uuid": callid})]
             if document != []:
-                return  {"number":document[0]["anumber"], "client":document[0]["client"]}
+                return  {"number":document[len(document)-1]["anumber"], "client":document[len(document)-1]["client"]}
             else:
                 return 0
         except:
             return 3
 
 
-def dbwrite(client, data, service):
-    if service == "token":
-        try:
-            token = uuid.uuid4().hex
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
-            c.aalarms.apikeys.insert_one({"cliente":client,"key":token})
-            return "OK", token
-        except:
-            return "Failed to add/update", 0
-    elif service == "call":
-        try:
-            c = MongoClient("mongodb://aalarms:Inf0m3d142017$@mongo/aalarms")
-            c.aalarms.callsnexmo.insert_one({"client": client, "uuid": data["uuid"], "status":data["status"], "anumber":data["anumber"]})
-            return 1
-        except:
-            return "Failed to add/update"
+
 
 def dbauth(apikey, postdata):
     try:
@@ -82,7 +62,6 @@ def nexmocall(postdata):
         return 3
 
 #Global variables
-tokenbot = "NDU2NmZlMmQtNTM2Mi00ZDkyLWIyNjItNzE5YmJiNjc4MGI3YjZlODRmNjAtMzQy"
-idroomtest = "Y2lzY29zcGFyazovL3VzL1JPT00vODFhZTFkODAtY2JhYS0xMWU3LThlYTgtYmY3ZTBhNTQwOWIx"
+
 nexmo_key = "167b6129"
 nexmo_secret = "31c0aee89130a6d1"

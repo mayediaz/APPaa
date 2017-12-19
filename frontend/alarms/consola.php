@@ -37,7 +37,17 @@ switch($actionID)
         header('Content-type: application/json');
         MainGeneral();
         $servicio = $_REQUEST['servicio'];
-        $M_servicios->testZabbix();
+        if(isset($_REQUEST['web']) && $_REQUEST['web'] == 1 && $noLaboral)
+        {
+            $a_vect['val'] = 'TRUE';
+            $a_vect['alertas'] = "";
+            $a_vect['info'] = 0;
+            echo json_encode($a_vect);
+        }
+        else
+        {
+            $M_servicios->testZabbix();
+        }
     }
     break;
     case 'caidazabbix':
@@ -54,7 +64,17 @@ switch($actionID)
         header('Content-type: application/json');
         MainGeneral();
         $servicio = $_REQUEST['servicio'];
-        $M_servicios->testCorreo();
+        if(isset($_REQUEST['web']) && $_REQUEST['web'] == 1 && $noLaboral)
+        {
+            $a_vect['val'] = 'TRUE';
+            $a_vect['alertas'] = "";
+            $a_vect['info'] = 0;
+            echo json_encode($a_vect);
+        }
+        else
+        {
+            $M_servicios->testCorreo();
+        }
     }
     break;
     case 'caidacorreo':
@@ -71,7 +91,17 @@ switch($actionID)
         header('Content-type: application/json');
         MainGeneral();
         $servicio = $_REQUEST['servicio'];
-        $M_servicios->testnexmo();
+        if(isset($_REQUEST['web']) && $_REQUEST['web'] == 1 && $noLaboral)
+        {
+            $a_vect['val'] = 'TRUE';
+            $a_vect['alertas'] = "";
+            $a_vect['info'] = 0;
+            echo json_encode($a_vect);
+        }
+        else
+        {
+            $M_servicios->testnexmo();
+        }
     }
     break;
     case 'caidanexmo':
@@ -88,7 +118,17 @@ switch($actionID)
         header('Content-type: application/json');
         MainGeneral();
         $servicio = $_REQUEST['servicio'];
-        $M_servicios->testCcx();
+        if(isset($_REQUEST['web']) && $_REQUEST['web'] == 1 && $noLaboral)
+        {
+            $a_vect['val'] = 'TRUE';
+            $a_vect['alertas'] = "";
+            $a_vect['info'] = 0;
+            echo json_encode($a_vect);
+        }
+        else
+        {
+            $M_servicios->testCcx();
+        }
     }
     break;
     case 'caidaccx':
@@ -123,7 +163,17 @@ switch($actionID)
         header('Content-type: application/json');
         MainGeneral();
         $servicio = $_REQUEST['servicio'];
-        $M_servicios->testSpark();
+        if(isset($_REQUEST['web']) && $_REQUEST['web'] == 1 && $noLaboral)
+        {
+            $a_vect['val'] = 'TRUE';
+            $a_vect['alertas'] = "";
+            $a_vect['info'] = 0;
+            echo json_encode($a_vect);
+        }
+        else
+        {
+            $M_servicios->testSpark();
+        }
     }
     break;
     case 'caidaspark':
@@ -138,9 +188,55 @@ switch($actionID)
     break;
     default:
     {
+
         MainGeneral();
         $servicios = $M_servicios->traerServicios();
-        $C_servicios->display();
+        if((isset($_SERVER["HTTP_HOST"]) && $_SERVER["HTTP_HOST"] == '127.0.0.1'))
+        {
+            if($noLaboral)
+            {
+                $servicio = $M_servicios->zabbix;
+                $res = $M_servicios->testZabbix();
+                if($res['llamarOk'])
+                {
+                    $lista = $res['alertas'];
+                    $M_servicios->caidazabbix();
+                }
+                $servicio = $M_servicios->correo;
+                $res = $M_servicios->testCorreo();
+                if($res['llamarOk'])
+                {
+                    $lista = $res['alertas'];
+                    $M_servicios->caidacorreo();
+                }
+                $servicio = $M_servicios->ccx;
+                $res = $M_servicios->testCcx();
+                if($res['llamarOk'])
+                {
+                    $lista = $res['alertas'];
+                    $M_servicios->caidaccx();
+                }
+                $servicio = $M_servicios->nexmo;
+                $res = $M_servicios->testNexmo();
+                if($res['llamarOk'])
+                {
+                    $lista = $res['alertas'];
+                    $M_servicios->caidanexmo();
+                }
+                $servicio = $M_servicios->spark;
+                $res = $M_servicios->testSpark();
+                if($res['llamarOk'])
+                {
+                    $lista = $res['alertas'];
+                    $M_servicios->caidaspark();
+                }
+                echo "Script Ejecutado";
+            }
+        }
+        else
+        {
+            $C_servicios->display();
+        }
     }
     break;
 }

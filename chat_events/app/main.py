@@ -84,7 +84,7 @@ def apicall():
         return jsonify({"result": "Invalid Api Key"})
 
 #Global variables
-tokenbot = "BOT TOKEN"
+tokenbot = "NDU2NmZlMmQtNTM2Mi00ZDkyLWIyNjItNzE5YmJiNjc4MGI3YjZlODRmNjAtMzQy"
 
 
 if __name__ == "__main__":

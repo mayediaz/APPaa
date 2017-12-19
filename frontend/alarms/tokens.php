@@ -22,4 +22,8 @@ foreach($M_usuarios->usuarios as $key => $info)
         $M_usuarios->act_token();
     }
 }
+if((isset($_SERVER["HTTP_HOST"]) && $_SERVER["HTTP_HOST"] == '127.0.0.1'))
+{
+    echo "Script Ejecutado";
+}
 ?>
