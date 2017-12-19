@@ -6,7 +6,7 @@ foreach($M_usuarios->usuarios as $key => $info)
     if($info['refresh'])
     {
         $url = "https://api.ciscospark.com/v1/access_token";
-        $data = array("grant_type"=>"refresh_token","client_id"=>"C14b8fdc411b38ea02bd0c19bd760f5517456953f2f8275bbb8afcec97e48cbda","client_secret"=>"9b4e59ad50f74a6bb88d83c42ff61e8e8d340212b6bf9ad184152b552ad14e72","refresh_token"=>$info['refresh']);
+        $data = array("grant_type"=>"refresh_token","client_id"=>"Client_id","client_secret"=>"client_secret","refresh_token"=>$info['refresh']);
         $options = array(
             'http' => array(
                 'header'  => "Content-type: application/json",
